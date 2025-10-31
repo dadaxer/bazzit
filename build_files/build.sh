@@ -11,7 +11,7 @@ set -ouex pipefail
 
 # this installs a package from fedora repos
 dnf5 remove -y rocm-runtime rocm-hip rocm-core rocm
-dnf5 install -y docker
+dnf5 install -y docker docker-compose
 
 # Use a COPR Example:
 #
@@ -23,3 +23,4 @@ dnf5 install -y docker
 #### Example for enabling a System Unit File
 
 systemctl enable podman.socket
+systemctl enable docker.service
