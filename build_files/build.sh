@@ -23,4 +23,4 @@ dnf5 install -y docker docker-compose
 #### Example for enabling a System Unit File
 
 systemctl enable podman.socket
-systemctl enable docker.service
+systemctl enable docker
