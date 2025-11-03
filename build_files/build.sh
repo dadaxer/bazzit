@@ -13,7 +13,7 @@ set -ouex pipefail
 # dnf5 remove -y rocm-runtime rocm-hip rocm-core rocm
 dnf5 install -y docker docker-compose
 
-rm -rf /usr/share/gnome-shell/extensions/*
+# rm -rf /usr/share/gnome-shell/extensions/*
 
 # Use a COPR Example:
 #
