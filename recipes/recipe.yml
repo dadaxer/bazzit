@@ -29,17 +29,12 @@ modules:
               - docker
               - docker-compose
               - mullvad-vpn
-      remove:
-          auto-remove: true
-          packages:
-              - code
-              - gnome-tweaks
 
     - type: fonts
       fonts:
           nerd-fonts:
-              - BigBlueTerminal
               - FiraCode
               - GeistMono
+              - JetBrainsMono
 
     - type: signing # this sets up the proper policy & signing files for signed images to work fully
