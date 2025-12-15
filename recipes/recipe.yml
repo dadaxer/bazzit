@@ -18,9 +18,6 @@ modules:
       files:
           - source: system
             destination: / # copies files/system/* (* means everything inside it) into your image's root folder /
-    - type: script
-      scripts:
-          - enable-sddm.sh
     - type: dnf
       repos:
           cleanup: true
@@ -31,7 +28,9 @@ modules:
               - docker
               - docker-compose
               - mullvad-vpn
-
+    - type: script
+      scripts:
+          - enable-sddm.sh
     - type: fonts
       fonts:
           nerd-fonts:
