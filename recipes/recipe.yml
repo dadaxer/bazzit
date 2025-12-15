@@ -28,16 +28,5 @@ modules:
               - docker
               - docker-compose
               - mullvad-vpn
-    - type: script
-      scripts:
-          - enable-sddm.sh
-    - type: fonts
-      fonts:
-          nerd-fonts:
-              - FiraCode
-              - GeistMono
-              - JetBrainsMono
-              - Iosevka
-              - IosevkaTermSlab
 
     - type: signing # this sets up the proper policy & signing files for signed images to work fully
