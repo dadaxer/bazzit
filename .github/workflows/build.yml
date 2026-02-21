@@ -10,7 +10,6 @@ on:
     pull_request:
     workflow_dispatch: # allow manually triggering builds
     image_version:
-        types: [published]
         names:
             - ghcr.io/ublue-os/bazzite-deck:stable
 
