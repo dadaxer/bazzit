@@ -3,9 +3,9 @@ repos:
     cleanup: true
     files:
         - https://repository.mullvad.net/rpm/stable/mullvad.repo
-    install:
-        packages:
-            - docker
-            - docker-compose
-            - konsole
-            - mullvad-vpn
+install:
+    packages:
+        - docker
+        - docker-compose
+        - konsole
+        - mullvad-vpn
