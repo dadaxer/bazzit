@@ -9,9 +9,8 @@ on:
     #         - "**.md"
     pull_request:
     workflow_dispatch: # allow manually triggering builds
-    image_version:
-        names:
-            - ghcr.io/dadaxer/mesolite:stable
+    repository_dispatch:
+        types: [bazzite-updated
 
 concurrency:
     # only run one build at a time
