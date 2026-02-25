@@ -9,6 +9,6 @@ install:
         - docker-compose
         - konsole
         - mullvad-vpn
-uninstall:
+remove:
     packages:
         - ptyxis
