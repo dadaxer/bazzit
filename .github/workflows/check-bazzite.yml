@@ -1,4 +1,4 @@
-name: Check Bazzite Images
+name: Check Bazzite Image
 
 on:
     schedule:
@@ -11,36 +11,21 @@ jobs:
         permissions:
             contents: write
 
-        strategy:
-            matrix:
-                image:
-                    - name: bazzite-deck-stable
-                      ref: ghcr.io/ublue-os/bazzite-deck:stable
-                      file: .bazzite_deck_digest
-                    - name: bazzite-stable
-                      ref: ghcr.io/ublue-os/bazzite:stable
-                      file: .bazzite_digest
-
         steps:
             - name: Checkout repo
               uses: actions/checkout@v4
 
-            - name: Install skopeo
-              run: |
-                  sudo apt-get update
-                  sudo apt-get install -y skopeo jq
-
-            - name: Fetch current digest
+            - name: Fetch current Bazzite digest
               id: digest
               run: |
-                  DIGEST=$(skopeo inspect docker://${{ matrix.image.ref }} | jq -r '.Digest')
+                  DIGEST=$(skopeo inspect docker://ghcr.io/ublue-os/bazzite-deck:stable | jq -r '.Digest')
                   echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
             - name: Load last known digest
               id: last
               run: |
-                  if [ -f "${{ matrix.image.file }}" ]; then
-                    echo "last=$(cat ${{ matrix.image.file }})" >> $GITHUB_OUTPUT
+                  if [ -f .bazzite_digest ]; then
+                    echo "last=$(cat .bazzite_digest)" >> $GITHUB_OUTPUT
                   else
                     echo "last=none" >> $GITHUB_OUTPUT
                   fi
@@ -57,11 +42,11 @@ jobs:
             - name: Save new digest
               if: steps.compare.outputs.updated == 'true'
               run: |
-                  echo "${{ steps.digest.outputs.digest }}" > ${{ matrix.image.file }}
+                  echo "${{ steps.digest.outputs.digest }}" > .bazzite_digest
                   git config user.name "github-actions"
                   git config user.email "github-actions@github.com"
-                  git add ${{ matrix.image.file }}
-                  git commit -m "Update digest for ${{ matrix.image.name }}"
+                  git add .bazzite_digest
+                  git commit -m "Update Bazzite digest"
                   git push
 
             - name: Trigger bluebuild workflow
@@ -71,8 +56,3 @@ jobs:
                   token: ${{ secrets.GITHUB_TOKEN }}
                   repository: ${{ github.repository }}
                   event-type: bazzite-updated
-                  client-payload: |
-                      {
-                        "image": "${{ matrix.image.name }}",
-                        "ref": "${{ matrix.image.ref }}"
-                      }
