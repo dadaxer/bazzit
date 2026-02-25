@@ -1,5 +1,5 @@
-type: fonts
-fonts:
-    - nerd-fonts:
-          - FiraCode
-          - JetBrainsMono
+- type: fonts
+  fonts:
+      - nerd-fonts:
+            - FiraCode
+            - JetBrainsMono
