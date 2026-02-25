@@ -1,4 +1,4 @@
-name: bluebuild
+name: Build Deck Image
 on:
     # schedule:
     #     - cron:
