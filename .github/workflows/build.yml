@@ -29,6 +29,7 @@ jobs:
             matrix:
                 recipe:
                     # !! Add your recipes here
+                    - bazzit.yml
                     - bazzit-deck.yml
         steps:
             # the build is fully handled by the reusable github action
