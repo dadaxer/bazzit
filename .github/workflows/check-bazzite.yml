@@ -2,7 +2,7 @@ name: Check Bazzite Image
 
 on:
     schedule:
-        - cron: "0 * * * *" # check every hour
+        - cron: "* 0/3 * * *" # check every 3 hours
     workflow_dispatch:
 
 jobs:
