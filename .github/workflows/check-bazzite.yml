@@ -21,8 +21,16 @@ jobs:
                   DIGEST=$(skopeo inspect docker://ghcr.io/ublue-os/bazzite-deck:stable | jq -r '.Digest')
                   echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
-            - name: Load last known digest
+            - name: Download last known digest artifact
               id: last
+              uses: actions/download-artifact@v3
+              with:
+                  name: bazzite-digest
+                  path: .
+              continue-on-error: true
+
+            - name: Read last known digest
+              id: last_digest
               run: |
                   if [ -f .bazzite_digest ]; then
                     echo "last=$(cat .bazzite_digest)" >> $GITHUB_OUTPUT
@@ -33,7 +41,7 @@ jobs:
             - name: Compare digests
               id: compare
               run: |
-                  if [ "${{ steps.digest.outputs.digest }}" != "${{ steps.last.outputs.last }}" ]; then
+                  if [ "${{ steps.digest.outputs.digest }}" != "${{ steps.last_digest.outputs.last }}" ]; then
                     echo "updated=true" >> $GITHUB_OUTPUT
                   else
                     echo "updated=false" >> $GITHUB_OUTPUT
@@ -43,11 +51,14 @@ jobs:
               if: steps.compare.outputs.updated == 'true'
               run: |
                   echo "${{ steps.digest.outputs.digest }}" > .bazzite_digest
-                  git config user.name "github-actions"
-                  git config user.email "github-actions@github.com"
-                  git add .bazzite_digest
-                  git commit -m "Update Bazzite digest"
-                  git push
+
+            - name: Upload new digest as artifact
+              if: steps.compare.outputs.updated == 'true'
+              uses: actions/upload-artifact@v3
+              with:
+                  name: bazzite-digest
+                  path: .bazzite_digest
+                  retention-days: 30
 
             - name: Trigger bluebuild workflow
               if: steps.compare.outputs.updated == 'true'
