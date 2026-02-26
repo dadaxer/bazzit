@@ -54,7 +54,7 @@ jobs:
 
             - name: Upload new digest as artifact
               if: steps.compare.outputs.updated == 'true'
-              uses: actions/upload-artifact@v3
+              uses: actions/upload-artifact@v4
               with:
                   name: bazzite-digest
                   path: .bazzite_digest
