@@ -12,23 +12,21 @@ jobs:
             contents: write
 
         steps:
-            - name: Checkout repo
+            - name: Checkout repo (State Branch)
               uses: actions/checkout@v4
               with:
-                  fetch-depth: 0 # Wichtig, um alle Branches zu sehen
+                  ref: state # Wechselt direkt auf den state-Branch
 
             - name: Fetch current digest
               id: digest
               run: |
-                  set -e
-                  DIGest=$(skopeo inspect docker://ghcr.io/ublue-os/bazzite-deck:stable | jq -r '.Digest')
-                  echo "digest=$DIGest" >> $GITHUB_OUTPUT
+                  DIGEST=$(skopeo inspect docker://ghcr.io/ublue-os/bazzite-deck:stable | jq -r '.Digest')
+                  echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
-            - name: Load last known digest from state branch
+            - name: Load last known digest
               id: last
               run: |
-                  # Versuche die Datei aus dem 'bazzite-state' Branch zu lesen
-                  if git show bazzite-state:.bazzite_digest > .bazzite_digest 2>/dev/null; then
+                  if [ -f .bazzite_digest ]; then
                     echo "last=$(cat .bazzite_digest)" >> $GITHUB_OUTPUT
                   else
                     echo "last=none" >> $GITHUB_OUTPUT
@@ -43,21 +41,15 @@ jobs:
                     echo "updated=false" >> $GITHUB_OUTPUT
                   fi
 
-            - name: Update state branch
+            - name: Save new digest
               if: steps.compare.outputs.updated == 'true'
               run: |
-                  # 1. Sicherstellen, dass wir den bazzite-state Branch haben oder erstellen
-                  git checkout -b bazzite-state || git checkout bazzite-state
-
-                  # 2. Die neue Datei schreiben
-                  echo "${{ steps.digest.outputs.digest }}" > .bazzint_digest
-
-                  # 3. Commit und Push auf den state-Branch
-                  git config user.name "github-actions[bot]"
-                  git config user.email "github-actions[bot]@users.noreply.github.com"
+                  echo "${{ steps.digest.outputs.digest }}" > .bazzite_digest
+                  git config user.name "github-actions"
+                  git config user.email "github-actions@github.com"
                   git add .bazzite_digest
-                  git commit -m "chore: update bazzite digest to ${{ steps.digest.outputs.digest }}"
-                  git push origin bazzite-state
+                  git commit -m "Update Bazzite digest"
+                  git push origin state # Expliziter Push in den state-Branch
 
             - name: Trigger bluebuild workflow
               if: steps.compare.outputs.updated == 'true'
