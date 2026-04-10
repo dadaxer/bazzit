@@ -1,14 +1,13 @@
 type: dnf
 repos:
-    cleanup: true
-    files:
-        - https://repository.mullvad.net/rpm/stable/mullvad.repo
+  cleanup: true
+  files:
+    - https://repository.mullvad.net/rpm/stable/mullvad.repo
 install:
-    packages:
-        - docker
-        - docker-compose
-        - konsole
-        - mullvad-vpn
+  packages:
+    - docker
+    - docker-compose
+    - mullvad-vpn
 remove:
-    packages:
-        - ptyxis
+  packages:
+    - ptyxis
