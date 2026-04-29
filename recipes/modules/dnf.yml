@@ -8,8 +8,6 @@ install:
     - docker
     - docker-compose
     - mullvad-vpn
-    - rocm-core
-    - rocm-runtime
     - rocm-hip
     - rocm-smi
     - rocm-clinfo
