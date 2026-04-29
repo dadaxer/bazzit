@@ -8,10 +8,10 @@ install:
     - docker
     - docker-compose
     - mullvad-vpn
-    - rocm-hip
-    - rocm-smi
     - rocm-clinfo
+    - rocm-hip
     - rocm-opencl
+    - rocm-smi
 remove:
   packages:
     - ptyxis
