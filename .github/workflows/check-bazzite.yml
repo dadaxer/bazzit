@@ -2,59 +2,62 @@ name: Check Bazzite Images
 
 on:
   schedule:
-    - cron: "42 */3 * * *" # check every 3 hours
+    - cron: "42 */3 * * *"
   workflow_dispatch:
 
 jobs:
-  check:
+  check-images:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    strategy:
+      max-parallel: 1
+      matrix:
+        include:
+          - name: "bazzite-standard"
+            image: "ghcr.io/ublue-os/bazzite:stable"
+            event: "bazzite-updated"
+            file: ".bazzite_digest"
+          - name: "bazzite-deck"
+            image: "ghcr.io/ublue-os/bazzite-deck:stable"
+            event: "bazzite-deck-updated"
+            file: ".bazzite_digest_deck"
 
     steps:
       - name: Checkout repo (State Branch)
         uses: actions/checkout@v6
         with:
-          ref: state # Wechselt direkt auf den state-Branch
+          ref: state
 
       - name: Fetch current digest
-        id: digest
+        id: remote
         run: |
-          DIGEST=$(skopeo inspect docker://ghcr.io/ublue-os/bazzite:stable | jq -r '.Digest')
+          DIGEST=$(skopeo inspect docker://${{ matrix.image }} | jq -r '.Digest')
           echo "digest=$DIGEST" >> $GITHUB_OUTPUT
 
-      - name: Load last known digest
-        id: last
+      - name: Compare and Save
+        id: check
         run: |
-          if [ -f .bazzite_digest ]; then
-            echo "last=$(cat .bazzite_digest)" >> $GITHUB_OUTPUT
-          else
-            echo "last=none" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Compare digests
-        id: compare
-        run: |
-          if [ "${{ steps.digest.outputs.digest }}" != "${{ steps.last.outputs.last }}" ]; then
-            echo "updated=true" >> $GITHUB_OUTPUT
-          else
+          if [ -f "${{ matrix.file }}" ] && [ "$(cat ${{ matrix.file }})" == "${{ steps.remote.outputs.digest }}" ]; then
             echo "updated=false" >> $GITHUB_OUTPUT
+          else
+            echo "${{ steps.remote.outputs.digest }}" > "${{ matrix.file }}"
+            echo "updated=true" >> $GITHUB_OUTPUT
           fi
 
-      - name: Save new digest
-        if: steps.compare.outputs.updated == 'true'
+      - name: Push update
+        if: steps.check.outputs.updated == 'true'
         run: |
-          echo "${{ steps.digest.outputs.digest }}" > .bazzite_digest
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add .bazzite_digest
-          git commit -m "Update Bazzite digest"
-          git push origin state # Expliziter Push in den state-Branch
+          git add ${{ matrix.file }}
+          git commit -m "Update ${{ matrix.name }} digest"
+          git pull --rebase origin state
+          git push origin state
 
-      - name: Trigger bluebuild workflow
-        if: steps.compare.outputs.updated == 'true'
+      - name: Trigger build
+        if: steps.check.outputs.updated == 'true'
         uses: peter-evans/repository-dispatch@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          event-type: bazzite-updated
+          event-type: ${{ matrix.event }}
