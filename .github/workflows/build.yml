@@ -1,44 +1,56 @@
 name: Build Images
 on:
-    # schedule:
-    #     - cron:
-    #           "00 06 * * 0,3" # build at 06:00 UTC every day
-    #           # (20 minutes after last ublue images start building)
-    # push:
-    #     paths-ignore: # don't rebuild if only documentation has changed
-    #         - "**.md"
-    pull_request:
-    workflow_dispatch: # allow manually triggering builds
-    repository_dispatch:
-        types: [bazzite-updated]
+  pull_request:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [bazzite-updated, bazzite-deck-updated]
 
 concurrency:
-    # only run one build at a time
-    group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
-    cancel-in-progress: true
-jobs:
-    bluebuild:
-        name: Build Custom Images
-        runs-on: ubuntu-latest
-        permissions:
-            contents: read
-            packages: write
-            id-token: write
-        strategy:
-            fail-fast: false # stop GH from cancelling all matrix builds if one fails
-            matrix:
-                recipe:
-                    - bazzit.yml
-                    - bazzit-deck.yml
-        steps:
-            # the build is fully handled by the reusable github action
-            - name: Build Custom Image
-              uses: blue-build/github-action@v1.11
-              with:
-                  recipe: ${{ matrix.recipe }}
-                  cosign_private_key: ${{ secrets.SIGNING_SECRET }}
-                  registry_token: ${{ github.token }}
-                  pr_event_number: ${{ github.event.number }}
+  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
+  cancel-in-progress: true
 
-                  # enabled by default, disable if your image is small and you want faster builds
-                  maximize_build_space: true
+jobs:
+  bluebuild:
+    name: Build Custom Images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Standard Bazzite
+          - recipe: bazzit.yml
+            event: bazzite-updated
+          # Bazzite Deck
+          - recipe: bazzit-deck.yml
+            event: bazzite-deck-updated
+
+    steps:
+      # Dieser Schritt prüft, ob der Build für dieses Rezept laufen soll:
+      # 1. Wenn es ein manueller Start oder PR ist -> IMMER bauen
+      # 2. Wenn es ein Dispatch ist -> Nur bauen, wenn das Event zum Rezept passt
+      - name: Check if build is needed
+        id: filter
+        run: |
+          if [[ "${{ github.event_name }}" == "repository_dispatch" ]]; then
+            if [[ "${{ github.event.action }}" == "${{ matrix.event }}" ]]; then
+              echo "run=true" >> $GITHUB_OUTPUT
+            else
+              echo "run=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "run=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build Custom Image
+        if: steps.filter.outputs.run == 'true'
+        uses: blue-build/github-action@v1.11
+        with:
+          recipe: ${{ matrix.recipe }}
+          cosign_private_key: ${{ secrets.SIGNING_SECRET }}
+          registry_token: ${{ github.token }}
+          pr_event_number: ${{ github.event.number }}
+          maximize_build_space: true
