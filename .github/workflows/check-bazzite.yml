@@ -15,7 +15,7 @@ jobs:
       matrix:
         include:
           - name: "bazzite-standard"
-            image: "ghcr.io/ublue-os/bazzite-dx:stable"
+            image: "ghcr.io/ublue-os/bazzite:stable"
             event: "bazzite-updated"
             file: ".bazzite_digest"
           - name: "bazzite-deck"

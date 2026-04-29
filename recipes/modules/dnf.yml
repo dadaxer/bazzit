@@ -1,11 +1,17 @@
 type: dnf
 repos:
-    cleanup: true
-    files:
-        - https://repository.mullvad.net/rpm/stable/mullvad.repo
+  cleanup: true
+  files:
+    - https://repository.mullvad.net/rpm/stable/mullvad.repo
 install:
-    packages:
-        - mullvad-vpn
+  packages:
+    - mullvad-vpn
+    - rocm-core
+    - rocm-runtime
+    - rocm-hip
+    - rocm-smi
+    - rocm-clinfo
+    - rocm-opencl
 remove:
-    packages:
-        - ptyxis
+  packages:
+    - ptyxis

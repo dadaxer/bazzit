@@ -1,6 +1,6 @@
 type: fonts
 fonts:
-    nerd-fonts:
-        - FiraCode
-        - JetBrainsMono
-        - VictorMono
+  nerd-fonts:
+    - FiraCode
+    - JetBrainsMono
+    - VictorMono
