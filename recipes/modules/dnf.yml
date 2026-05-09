@@ -7,6 +7,7 @@ install:
   packages:
     - docker
     - docker-compose
+    - iscsi-initiator-utils
     - mullvad-vpn
     - rocm-clinfo
     - rocm-hip
