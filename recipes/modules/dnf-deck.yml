@@ -12,6 +12,7 @@ install:
     - rocm-hip
     - rocm-opencl
     - rocm-smi
+    - rocminfo
 remove:
   packages:
     - ptyxis
