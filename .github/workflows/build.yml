@@ -1,6 +1,9 @@
 name: Build Images
 on:
   # pull_request:
+  push:
+    branches:
+      - master
   workflow_dispatch:
   repository_dispatch:
     types: [bazzite-updated, bazzite-deck-updated]
