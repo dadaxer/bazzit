@@ -19,7 +19,7 @@ jobs:
             event: "bazzite-updated"
             file: ".bazzite_digest"
           - name: "bazzite-deck"
-            image: "ghcr.io/ublue-os/bazzite-deck:testing"
+            image: "ghcr.io/ublue-os/bazzite-deck:stable"
             event: "bazzite-deck-updated"
             file: ".bazzite_digest_deck"
 
