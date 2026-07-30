@@ -9,12 +9,8 @@ install:
     - docker-compose
     - iscsi-initiator-utils
     - mullvad-vpn
-    - oxygen-icon-theme
-    - rocm-clinfo
-    - rocm-hip
-    - rocm-opencl
     - rocm-smi
-    - rocminfo
+
 remove:
   packages:
     - ptyxis
