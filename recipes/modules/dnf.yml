@@ -10,7 +10,6 @@ install:
     - iscsi-initiator-utils
     - mullvad-vpn
     - rocm-smi
-
 remove:
   packages:
     - ptyxis

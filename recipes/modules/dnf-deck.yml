@@ -9,7 +9,6 @@ install:
     - docker-compose
     - iscsi-initiator-utils
     - mullvad-vpn
-    - oxygen-icon-theme
 remove:
   packages:
     - ptyxis
