@@ -2,12 +2,12 @@
 
 See the [BlueBuild docs](https://blue-build.org/how-to/setup/) for quick setup instructions for setting up your own repository based on this template.
 
-After setup, it is recommended you update this README to describe your custom image.
+"After setting up, it is recommended you update this README to describe your custom image.
 
 ## Installation
 
 > [!WARNING]  
-> [This is an experimental feature](https://www.fedoraproject.org/wiki/Changes/OstreeNativeContainerStable), try at your own discretion.
+> [This is an experimental feature](https://www.fedoraproject.org/wiki/Changes/OstreeNativeContainerStable), use at your own discretion.
 
 To rebase an existing atomic Fedora installation to the latest build:
 
@@ -23,7 +23,7 @@ To rebase an existing atomic Fedora installation to the latest build:
   ```
   rpm-ostree rebase ostree-image-signed:docker://ghcr.io/dadaxer/bazzit:stable
   ```
-- Reboot again to complete the installation
+- Reboot again to complete the installation.
   ```
   systemctl reboot
   ```
