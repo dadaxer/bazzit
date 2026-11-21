@@ -8,14 +8,16 @@ on:
   repository_dispatch:
     types: [bazzite-updated, bazzite-deck-updated]
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref || github.run_id }}
-  cancel-in-progress: true
-
 jobs:
   bluebuild:
     name: Build Custom Images
     runs-on: ubuntu-latest
+    # Pro Rezept eigene Concurrency-Group: ein neuer Build cancelliert nur
+    # laufende Builds desselben Rezepts, nicht den parallelen Build des
+    # anderen Rezepts (z.B. nach bazzite-updated + bazzite-deck-updated).
+    concurrency:
+      group: build-${{ matrix.recipe }}-${{ github.ref || github.run_id }}
+      cancel-in-progress: true
     permissions:
       contents: read
       packages: write
